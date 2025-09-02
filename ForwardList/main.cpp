@@ -48,6 +48,23 @@ public:
 		Head = New;
 	}
 
+	void push_back(int Data)
+	{
+		if (Head == nullptr) return push_front(Data);
+		Element* Temp = Head;
+		while (Temp->pNext) Temp = Temp->pNext;
+		Temp->pNext = new Element(Data);
+	}
+
+	//				Removing elements:
+	void pop_front()
+	{
+		if (Head == nullptr) return;
+		Element* Temp = Head;
+		Head = Temp->pNext;
+		delete Temp;
+	}
+
 	//					Methods:
 	void print()const
 	{
@@ -73,6 +90,18 @@ void main()
 	for (int i = 0; i < n; i++)
 	{
 		list.push_front(rand() % 100);
+	}
+	list.print();
+	
+	for (int i = 0; i < n; i++)
+	{
+		list.pop_front();
+	}
+	list.print();
+	
+	for (int i = 0; i < n; i++)
+	{
+		list.push_back(rand() % 100);
 	}
 	list.print();
 	
