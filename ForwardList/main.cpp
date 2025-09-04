@@ -41,6 +41,7 @@ public:
 	}
 	~ForwardList()
 	{
+		while (Head) pop_front();
 		cout << "FLDestructor:\t" << this << endl;
 	}
 
@@ -102,6 +103,16 @@ public:
 		while (Temp->pNext->pNext != nullptr) Temp = Temp->pNext;
 		delete Temp->pNext;
 		Temp->pNext = nullptr;
+	}
+	void erase(int Index)
+	{
+		if (Index == 0) return pop_front();
+		if (Index > Element::count) return;
+		Element* Temp = Head;
+		for (int i = 0; i < Index - 1; i++) Temp = Temp->pNext;
+		Element* Erased = Temp->pNext;
+		Temp->pNext = Temp->pNext->pNext;
+		delete Erased;
 	}
 
 	//					Methods:
@@ -175,4 +186,9 @@ void main()
 	cout << "Введите значение добавляемого элемента: "; cin >> value;
 	list1.insert(value, index);
 	list1.print();
+	cout << "Введите индекс удаляемого элемента: "; cin >> index;
+
+	list1.erase(index);
+	list1.print();
+
 }
