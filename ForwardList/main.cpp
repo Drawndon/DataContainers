@@ -59,11 +59,20 @@ public:
 		size = 0;
 		cout << "FLConstructor:\t" << this << endl;
 	}
+	explicit ForwardList(int size) :ForwardList()
+	{
+		while (size--) push_front(0);
+	}
 	ForwardList(const ForwardList& other):ForwardList()
 	{
 		//Deep copy (Побитовое копирование):
 		*this = other;
 		cout << "FLCopyConstructor:\t" << this << endl;
+	}
+	ForwardList(ForwardList&& other): ForwardList()
+	{
+		*this = other;
+		
 	}
 	~ForwardList()
 	{
@@ -82,6 +91,23 @@ public:
 		for (Element* Temp = other.Head; Temp; Temp = Temp->pNext) push_back(Temp->Data);
 		cout << "FLCopyAssignment:\t" << this << endl;
 		return *this;
+	}
+
+	ForwardList& operator=(ForwardList&& other)
+	{
+		if (this == &other) return *this;
+		this->~ForwardList();
+		this->Head = other.Head;
+		this->size = other.size;
+		other.Head = nullptr;
+		other.size = 0;
+		cout << "FLMoveAssignment:\t" << this << endl;
+	}
+	int& operator[](int index)
+	{
+		Element* Temp = Head;
+		for (int i = 0; i < index; i++) Temp = Temp->pNext;
+		return Temp->Data;
 	}
 
 	//				Adding elements:
@@ -202,8 +228,9 @@ ForwardList operator+(const ForwardList& left, const ForwardList& right)
 
 
 //#define BASE_CHECK
-#define OPERATOR_PLUS_CHECK
+//#define OPERATOR_PLUS_CHECK
 //#define PERFORMANCE_CHECK
+#define SIZE_CONSTRUCTOR_CHECK
 
 
 void main()
@@ -291,5 +318,16 @@ void main()
 	cout << "ForwardList filled  for " << double(t_end - t_start)/CLOCKS_PER_SEC << " sec. ";
 	system("PAUSE");
 #endif // PERFORMANCE_CHECK
+
+#ifdef SIZE_CONSTRUCTOR_CHECK
+	ForwardList list(5);
+	clock_t t_start = clock();
+	for (int i = 0; i < list.get_size(); i++) list[i] = rand() % 100;
+	clock_t t_end = clock();
+	cout << "ForwardList filled  for " << double(t_end - t_start)/CLOCKS_PER_SEC << " sec. " << endl;
+	for (int i = 0; i < list.get_size(); i++) cout << list[i] << tab;
+	cout << endl;
+#endif // SIZE_CONSTRUCTOR_CHECK
+
 
 }
