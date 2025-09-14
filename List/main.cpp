@@ -32,8 +32,7 @@ class List
 public:
 	class Iterator
 	{
-	protected:
-		Element* Temp;
+	Element* Temp;
 	public:
 
 		Iterator(Element* Temp = nullptr) : Temp(Temp)
