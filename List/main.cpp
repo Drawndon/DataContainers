@@ -3,7 +3,6 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-
 /*Class – это обращение к обычному классу
 Class<type> -это обращение к шаблонному классу, type – определяет какого типа будут поля создаваемого объекта.
 Для того, чтобы сделать класс шаблонным, перед ним достаточно просто создать шаблон :
@@ -11,7 +10,6 @@ template<typename T>*/
 
 #define tab "\t"
 #define delimiter "\n--------------------------------------------------\n"
-
 
 template<typename T>
 class List
@@ -144,228 +142,258 @@ public:
 			return ConstBaseIterator::Temp->Data;
 		}
 	};
-	ConstIterator begin()const
-	{
-		return Head;
-	}
-	ConstIterator end()const
-	{
-		return nullptr;
-	}
-	ConstReverseIterator rbegin()const
-	{
-		return Tail;
-	}
-	ConstReverseIterator rend()const
-	{
-		return nullptr;
-	}
-	Iterator begin()
-	{
-		return Head;
-	}
-	Iterator end()
-	{
-		return nullptr;
-	}
-	ReverseIterator rbegin()
-	{
-		return Tail;
-	}
-	ReverseIterator rend()
-	{
-		return nullptr;
-	}
+	ConstIterator begin()const;
+	ConstIterator end()const;
+	ConstReverseIterator rbegin()const;
+	ConstReverseIterator rend()const;
+	Iterator begin();
+	Iterator end();
+	ReverseIterator rbegin();
+	ReverseIterator rend();
 
-	List()
-	{
-		Head = Tail = nullptr;
-		size = 0;
-		cout << "LConstructor:\t" << this << endl;
-	}
-	List(const std::initializer_list<T>& il) :List()
-	{
-		for (T const* it = il.begin(); it != il.end(); ++it)
-		{
-			push_back(*it);
-		}
-		cout << "ILConstructor:/t" << this << endl;
-	}
-	List(const List<T>& other) :List()
-	{
-		*this = other;
-		cout << "LCopyConstructor:\t" << this << endl;
-	}
-	~List()
-	{
-		//while (Head)pop_front();
-		while (Tail)pop_back();
-		cout << "LDestructor:\t" << this << endl;
-	}
+	List();
+	List(const std::initializer_list<T>& il); //Делегирование в прототипе не нужно, это часть реализации
+	List(const List<T>& other);
+	~List();
 
 	//				Operators:
-	List<T>& operator=(const List<T>& other)
-	{
-		if (this == &other) return *this;
-		while (Head)pop_front();
-		for (Element* Temp = other.Head; Temp; Temp = Temp->pNext) push_back(Temp->Data);
-		cout << "LCopyAssignment:\t" << this << endl;
-		return *this;
-	}
+	List<T>& operator=(const List<T>& other);
 
 	//				Adding Elements:
-	void push_front(T Data)
-	{
-		//1) Создаем элемент, в котором будет храниться добавляемое значение:
-		Element* New = new Element(Data);
+	void push_front(T Data);
 
-		if (Head == nullptr && Tail == nullptr)
-		{
-			Head = Tail = New;
-		}
-		else
-		{
-			//2) Пристыковываем новый элемент к списку:
-			New->pNext = Head;
+	void push_back(T Data);
 
-			//3) Пристыковываем начальный элемент списка к новому элементу:
-			Head->pPrev = New;
-
-			//4) Делаем новый элемент начальным элементом списка:
-			Head = New;
-		}
-
-		size++;
-	}
-
-	void push_back(T Data)
-	{
-		//1) Создаем новый элемент:
-		Element* New = new Element(Data);
-		if (Head == nullptr && Tail == nullptr)
-			Head = Tail = New;
-		else
-		{
-			//2) Цепляем новый элемент за хвост списка
-			New->pPrev = Tail;
-
-			//3) Пристыковываем список к новому элементу:
-			Tail->pNext = New;
-
-			//4) Делаем новый элемент хвостом списка:
-			Tail = New;
-		}
-		size++;
-	}
-
-	void insert(T Data, int Index)
-	{
-		if (Index < 0) return;
-		if (Index == 0 || size == 0) return push_front(Data); //Проверяем граничные условия
-		if (Index >= size) return push_back(Data); //Проверяем граничные условия
-		//1) Доходим до нужного элемента:
-		Element* Temp;
-		if (Index < size / 2) // Определяем с какой стороны заходить, либо через Голову, либо через Хвост
-		{
-			Temp = Head;
-			for (int i = 0; i < Index; i++) Temp = Temp->pNext;
-		}
-		else
-		{
-			Temp = Tail;
-			for (int i = 0; i < size - Index - 1; i++) Temp = Temp->pPrev;
-		}
-		//////////////////////////////////////////////////////////////////////////////////////////////////
-		//Независимо от того, каким образом мы дошли до нужного элемента, сначала списка или с конца
-		//списка, процедура добавления элемента будет идентичной:
-		//////////////////////////////////////////////////////////////////////////////////////////////////
-		//2) Создаем новый элемент:
-		Element* New = new Element(Data);
-
-		//3) Пристыковываем новый элемент к списку:
-		New->pNext = Temp;
-		New->pPrev = Temp->pPrev;
-
-		//4) Вклиниваем новый элемент в список:
-		Temp->pPrev->pNext = New;
-		Temp->pPrev = New;
-
-		size++;
-
-	}
+	void insert(T Data, int Index);
 
 	//				Removing elelemts:
-	void pop_front()
-	{
-		if (Head == nullptr && Tail == nullptr) return;
-		if (Head == Tail)	//Если Голова и Хвост равны, значит они указывают либо на 0,
-			//либо на один и тот же элемент
-			//Ситуацию с пустым списком обрабатывает предыдущее условие.
-			//Ситуацию с вырожденным списком обрабатывает текущее условие, 
-			//и в этом if удаляется один единственный элемент списка
-		{
-			delete Head;
-			Head = Tail = nullptr;
-		}
-		else
-		{
-			//			Общий случай:
-			//1) Смещаем Голову на следующий элемент:
-			Head = Head->pNext;
-
-			//2) Удаляем элемент из памяти:
-			delete Head->pPrev;
-
-			//3) Обнуляем указатель на удаленный элемент (делаем Head последним элементом списка):
-			Head->pPrev = nullptr;
-
-		}
-		size--;
-	}
-	void pop_back() //Меняем зеркально pop_front()
-	{
-		if (Head == nullptr && Tail == nullptr)return; // Если список пуст
-		if (Head == Tail)
-		{
-			delete Head; // Можно Tail
-			Head = Tail = nullptr;
-		}
-		else
-		{
-			Tail = Tail->pPrev;
-			delete Tail->pNext;
-			Tail->pNext = nullptr;
-		}
-		size--;
-	}
+	void pop_front();
+	void pop_back(); //Меняем зеркально pop_front()
 
 	//				Methods:
-	void print()const
-	{
-		cout << delimiter << endl;
-		cout << "Head: " << Head << endl;
-		for (Element* Temp = Head; Temp; Temp = Temp->pNext)
-			cout << Temp->pPrev << tab << Temp << tab << Temp->Data << tab << Temp->pNext << endl;
-		cout << "Tail: " << Tail << endl;
-		cout << "Количество элементов списка: " << size;
-		cout << delimiter << endl;
-	}
-	void reverse_print()const
-	{
-		cout << delimiter << endl;
-		cout << "Tail: " << Tail << endl;
-		for (Element * Temp = Tail; Temp; Temp = Temp->pPrev)
-			cout << Temp->pPrev << tab << Temp << tab << Temp->Data << tab << Temp->pNext << endl;
-		cout << "Head: " << Head << endl;
-		cout << "Количество элементов списка: " << size<<  endl;
-		cout << delimiter << endl;
-
-	}
-
+	void print()const;
+	void reverse_print()const;
 };
 
-template<typename T>
-List<T> operator+(const List<T>& left, const List<T>& right)
+template<typename T>typename List<T>::ConstIterator List<T>::begin()const //typename List<T>::ConstIterator - это имя типа
+{
+	return Head;
+}
+template<typename T>typename List<T>::ConstIterator List<T>::end()const
+{
+	return nullptr;
+}
+template<typename T>typename List<T>::ConstReverseIterator List<T>::rbegin()const
+{
+	return Tail;
+}
+template<typename T>typename List<T>::ConstReverseIterator List<T>::rend()const
+{
+	return nullptr;
+}
+template<typename T>typename List<T>::Iterator List<T>::begin()
+{
+	return Head;
+}
+template<typename T>typename List<T>::Iterator List<T>::end()
+{
+	return nullptr;
+}
+template<typename T>typename List<T>::ReverseIterator List<T>::rbegin()
+{
+	return Tail;
+}
+template<typename T>typename List<T>::ReverseIterator List<T>::rend()
+{
+	return nullptr;
+}
+template<typename T>List<T>::List()
+{
+	Head = Tail = nullptr;
+	size = 0;
+	cout << "LConstructor:\t" << this << endl;
+}
+
+template<typename T>List<T>::List(const std::initializer_list<T>& il) :List()
+{
+	for (T const* it = il.begin(); it != il.end(); ++it)
+	{
+		push_back(*it);
+	}
+	cout << "ILConstructor:/t" << this << endl;
+}
+template<typename T>List<T>::List(const List<T>&other) : List()
+{
+	*this = other;
+	cout << "LCopyConstructor:\t" << this << endl;
+}
+template<typename T>List<T>::~List()
+{
+	//while (Head)pop_front();
+	while (Tail)pop_back();
+	cout << "LDestructor:\t" << this << endl;
+}
+
+//				Operators:
+template<typename T>List<T>& List<T>::operator=(const List<T>& other)
+{
+	if (this == &other) return *this;
+	while (Head)pop_front();
+	for (Element* Temp = other.Head; Temp; Temp = Temp->pNext) push_back(Temp->Data);
+	cout << "LCopyAssignment:\t" << this << endl;
+	return *this;
+}
+
+//				Adding Elements:
+template<typename T>void List<T>::push_front(T Data)
+{
+	//1) Создаем элемент, в котором будет храниться добавляемое значение:
+	Element* New = new Element(Data);
+
+	if (Head == nullptr && Tail == nullptr)
+	{
+		Head = Tail = New;
+	}
+	else
+	{
+		//2) Пристыковываем новый элемент к списку:
+		New->pNext = Head;
+
+		//3) Пристыковываем начальный элемент списка к новому элементу:
+		Head->pPrev = New;
+
+		//4) Делаем новый элемент начальным элементом списка:
+		Head = New;
+	}
+
+	size++;
+}
+
+template<typename T>void List<T>::push_back(T Data)
+{
+	//1) Создаем новый элемент:
+	Element* New = new Element(Data);
+	if (Head == nullptr && Tail == nullptr)
+		Head = Tail = New;
+	else
+	{
+		//2) Цепляем новый элемент за хвост списка
+		New->pPrev = Tail;
+
+		//3) Пристыковываем список к новому элементу:
+		Tail->pNext = New;
+
+		//4) Делаем новый элемент хвостом списка:
+		Tail = New;
+	}
+	size++;
+}
+
+template<typename T>void List<T>::insert(T Data, int Index)
+{
+	if (Index < 0) return;
+	if (Index == 0 || size == 0) return push_front(Data); //Проверяем граничные условия
+	if (Index >= size) return push_back(Data); //Проверяем граничные условия
+	//1) Доходим до нужного элемента:
+	Element* Temp;
+	if (Index < size / 2) // Определяем с какой стороны заходить, либо через Голову, либо через Хвост
+	{
+		Temp = Head;
+		for (int i = 0; i < Index; i++) Temp = Temp->pNext;
+	}
+	else
+	{
+		Temp = Tail;
+		for (int i = 0; i < size - Index - 1; i++) Temp = Temp->pPrev;
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//Независимо от того, каким образом мы дошли до нужного элемента, сначала списка или с конца
+	//списка, процедура добавления элемента будет идентичной:
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//2) Создаем новый элемент:
+	Element* New = new Element(Data);
+
+	//3) Пристыковываем новый элемент к списку:
+	New->pNext = Temp;
+	New->pPrev = Temp->pPrev;
+
+	//4) Вклиниваем новый элемент в список:
+	Temp->pPrev->pNext = New;
+	Temp->pPrev = New;
+
+	size++;
+
+}
+
+//				Removing elelemts:
+template<typename T>void List<T>::pop_front()
+{
+	if (Head == nullptr && Tail == nullptr) return;
+	if (Head == Tail)	//Если Голова и Хвост равны, значит они указывают либо на 0,
+		//либо на один и тот же элемент
+		//Ситуацию с пустым списком обрабатывает предыдущее условие.
+		//Ситуацию с вырожденным списком обрабатывает текущее условие, 
+		//и в этом if удаляется один единственный элемент списка
+	{
+		delete Head;
+		Head = Tail = nullptr;
+	}
+	else
+	{
+		//			Общий случай:
+		//1) Смещаем Голову на следующий элемент:
+		Head = Head->pNext;
+
+		//2) Удаляем элемент из памяти:
+		delete Head->pPrev;
+
+		//3) Обнуляем указатель на удаленный элемент (делаем Head последним элементом списка):
+		Head->pPrev = nullptr;
+
+	}
+	size--;
+}
+template<typename T>void List<T>::pop_back() //Меняем зеркально pop_front()
+{
+	if (Head == nullptr && Tail == nullptr)return; // Если список пуст
+	if (Head == Tail)
+	{
+		delete Head; // Можно Tail
+		Head = Tail = nullptr;
+	}
+	else
+	{
+		Tail = Tail->pPrev;
+		delete Tail->pNext;
+		Tail->pNext = nullptr;
+	}
+	size--;
+}
+
+//				Methods:
+template<typename T>void List<T>::print()const
+{
+	cout << delimiter << endl;
+	cout << "Head: " << Head << endl;
+	for (Element* Temp = Head; Temp; Temp = Temp->pNext)
+		cout << Temp->pPrev << tab << Temp << tab << Temp->Data << tab << Temp->pNext << endl;
+	cout << "Tail: " << Tail << endl;
+	cout << "Количество элементов списка: " << size;
+	cout << delimiter << endl;
+}
+template<typename T>void List<T>::reverse_print()const
+{
+	cout << delimiter << endl;
+	cout << "Tail: " << Tail << endl;
+	for (Element* Temp = Tail; Temp; Temp = Temp->pPrev)
+		cout << Temp->pPrev << tab << Temp << tab << Temp->Data << tab << Temp->pNext << endl;
+	cout << "Head: " << Head << endl;
+	cout << "Количество элементов списка: " << size << endl;
+	cout << delimiter << endl;
+
+}
+
+template<typename T>List<T> operator+(const List<T>& left, const List<T>& right)
 {
 	List<T> fusion = left;
 	for (typename List<T>::ConstIterator it = right.begin(); it != right.end(); ++it)
