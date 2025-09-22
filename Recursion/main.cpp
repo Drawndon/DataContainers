@@ -7,9 +7,9 @@ double power(double a, int b);
 int fibonacci(int n);
 
 //#define ELEVATOR_CHECK
-#define FACTORIAL_CHECK
-#define POWER_CHECK
-#define FIBONACCI_CHECK
+//#define FACTORIAL_CHECK
+//#define POWER_CHECK
+//#define FIBONACCI_CHECK
 
 void main()
 {
