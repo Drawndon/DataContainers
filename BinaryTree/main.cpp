@@ -2,6 +2,7 @@
 using namespace std;
 
 #define tab "\t"
+#define delimeter "\n-----------------------------------------------\n"
 
 class Tree
 {
@@ -32,7 +33,10 @@ public:
 	}
 	~Tree()
 	{
+		Clear(Root);
+		Root = nullptr;
 		cout << "TDestructor:\t" << this << endl;
+		cout << delimeter;
 	}
 	void insert(int Data, Element* Root)
 	{
@@ -62,11 +66,26 @@ public:
 		/*if (Root->pRight == nullptr)return Root->Data;
 		else return maxValue(Root->pRight);*/
 	}
-	int count(Element* Root)
+	int count(Element* Root)const
 	{
 		return !Root ? 0 : count(Root->pLeft) + count(Root->pRight) + 1;
 		/*if (Root == nullptr) return 0;
 		else return count(Root->pLeft) + count(Root->pRight) + 1;*/
+	}
+	int Sum(Element* Root)const
+	{
+		return Root ? Sum(Root->pLeft) + Sum(Root->pRight) + Root->Data : 0;
+	}
+	double Avg()const
+	{
+		return (double)Sum(Root) / count(Root);
+	}
+	void Clear(Element* Root)
+	{
+		if (Root == nullptr)return;
+		Clear(Root->pLeft);
+		Clear(Root->pRight);
+		delete Root;
 	}
 	void print(Element* Root)const
 	{
@@ -75,6 +94,11 @@ public:
 		cout << Root->Data << tab;
 		print(Root->pRight);
 	}
+};
+
+class UniqueTree :public Tree
+{
+
 };
 
 void main()
@@ -95,4 +119,10 @@ void main()
 	cout << "Минимальное значение в дереве: " << tree.minValue(tree.getRoot()) << endl;
 	cout << "Максимальное значение в дереве: " << tree.maxValue(tree.getRoot()) << endl;
 	cout << "Количество элементов в дереве: " << tree.count(tree.getRoot()) << endl;
+	cout << "Сумма элементов в дереве: " << tree.Sum(tree.getRoot()) << endl;
+	cout << "Среднее арифметическое элементов дерева: " << tree.Avg() << endl;
+	cout << "Очищенный список: " << endl;
+	tree.Clear(tree.getRoot());
+	tree.print(tree.getRoot());
+	cout << endl;
 }
