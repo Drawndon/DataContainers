@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <time.h>
 using namespace std;
 using std::cin;
 using std::cout;
@@ -6,7 +7,7 @@ using std::endl;
 
 #define tab "\t"
 #define delimeter "\n-----------------------------------------------\n"
-#define DEBUG
+//#define DEBUG
 class Tree
 {
 protected:
@@ -67,6 +68,10 @@ public:
 	void Erase(int Data)
 	{
 		Erase(Data, Root);
+	}
+	int depth()const
+	{
+		return depth(Root);
 	}
 	int minValue()const
 	{
@@ -153,6 +158,10 @@ private:
 
 		}
 	}
+	int depth(Element* Root)const
+	{
+		return !Root ? 0 : depth(Root->pLeft) + 1 > depth(Root->pRight) + 1 ? depth(Root->pLeft) + 1 : depth(Root->pRight) + 1;
+	}
 	int minValue(Element* Root)const
 	{
 		return Root == nullptr ? INT_MIN : Root->pLeft == nullptr ? Root->Data : minValue(Root->pLeft);
@@ -212,6 +221,9 @@ public:
 
 };
 //#define BASE_CHECK
+//#define ERASE_CHECK
+//#define DEPTH_CHECK
+#define EFFICIENCY_CHECK
 void main()
 {
 	setlocale(LC_ALL, "");
@@ -248,6 +260,7 @@ void main()
 	cout << "Среднее арифметическое элементов дерева: " << u_tree.Avg() << endl;
 #endif // BASE_CHECK
 
+#ifdef ERASE_CHECK
 	Tree tree =
 	{
 			50,
@@ -261,5 +274,65 @@ void main()
 	tree.Erase(50);
 	tree.Erase(75);
 	tree.print();
+#endif // ERASE_CHECK
+
+
+#ifdef DEPTH_CHECK
+	Tree tree = { 50, 25,75, 16, 32, 58, 85 };
+	cout << "Глубина дерева: " << tree.depth() << endl;
+#endif // DEPTH_CHECK
+
+#ifdef EFFICIENCY_CHECK
+	int n;
+	cout << "Введите количество элементов: "; cin >> n;
+	Tree tree;
+	for (int i = 0; i < n; i++)
+	{
+		tree.insert(rand() % 100);
+	}
+
+	clock_t t_start, t_end;
+	t_start = clock();
+	cout << "Минимальное значение в дереве: " << tree.minValue();
+	t_end = clock();
+	cout << " найдено за " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+	t_start = clock();
+	cout << "Максимальное значение в дереве: " << tree.maxValue();
+	t_end = clock();
+	cout << " найдено за " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+	t_start = clock();
+	cout << "Количество элементов в дереве: " << tree.count();
+	t_end = clock();
+	cout << " найдено за " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+	t_start = clock();
+	cout << "Сумма элементов в дереве: " << tree.Sum();
+	t_end = clock();
+	cout << " найдена за " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+	t_start = clock();
+	cout << "Среднее арифметическое элементов дерева: " << tree.Avg();
+	t_end = clock();
+	cout << " найдено за " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+	int element;
+	cout << "Введите элемент для удаления: "; cin >> element;
+	t_start = clock();
+	cout << "Элемент " << element << " удален за ";
+	tree.Erase(element);
+	t_end = clock();
+	cout << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+	t_start = clock();
+	cout << "Глубина дерева: " << tree.depth();
+	t_end = clock();
+	cout << " найдена за " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+	t_start = clock();
+	tree.Clear();
+	t_end = clock();
+	cout << "Дерево очищено за: " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд" << endl;
+
+
+
+#endif // EFFICIENCY_CHECK
+
+
+
 
 }
