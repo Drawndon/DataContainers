@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <time.h>
+#include <algorithm>
 using namespace std;
 using std::cin;
 using std::cout;
@@ -7,6 +8,7 @@ using std::endl;
 
 #define tab "\t"
 #define delimeter "\n-----------------------------------------------\n"
+//#define MAX(a,b)a>b?a:b
 //#define DEBUG
 class Tree
 {
@@ -205,10 +207,19 @@ private:
 	}
 	int depth(Element* Root)const
 	{
-		return !Root ? 0 :
+		//1
+		return Root == nullptr ? 0 : std::max(depth(Root->pLeft) + 1, depth(Root->pRight) + 1);//Так красиво и быстро
+		//но медленне чем через переменные
+		//2
+		/*if (Root == nullptr)return 0;
+		int l_depth = depth(Root->pLeft) + 1;
+		int r_depth = depth(Root->pRight) + 1;
+		return l_depth < r_depth ? r_depth : l_depth;*///Так быстрее за счет меньшее количество рекурсивных вызовов
+		//3
+		/*return !Root ? 0 :
 			depth(Root->pLeft) + 1 > depth(Root->pRight) + 1 ?
 			depth(Root->pLeft) + 1 :
-			depth(Root->pRight) + 1;
+			depth(Root->pRight) + 1;*/ //Так очень долго считает
 	}
 	void print(Element* Root)const
 	{
@@ -260,6 +271,7 @@ template<typename T>void measure_performance(const char message[], T(Tree::*func
 //#define DEPTH_CHECK
 //#define BALANCE_CHECK
 //#define EFFICIENCY_CHECK
+#define PERFORMANCE_CHECK
 void main()
 {
 	setlocale(LC_ALL, "");
@@ -301,15 +313,18 @@ void main()
 	{
 			50,
 		25,		75,
-	 16,  32, 58, 85
+	 16,  32, 58, 85, 91, 98
 	};
+	tree.print();
 	int value;
 	//cout << "Введите удаляемое значение: "; cin >> value;
-	tree.Erase(25);
+	/*tree.Erase(25);
 	tree.Erase(32);
 	tree.Erase(50);
-	tree.Erase(75);
+	tree.Erase(75);*/
+	tree.Erase(50);
 	tree.print();
+	cout << "Глубина дерева: " << tree.depth() << endl;
 #endif // ERASE_CHECK
 
 
@@ -376,10 +391,11 @@ void main()
 
 #endif // EFFICIENCY_CHECK
 
+#ifdef PERFORMANCE_CHECK
 	int n;
 	cout << "Введите количество элементов: "; cin >> n;
 	Tree tree;
-	
+
 	for (int i = 0; i < n; i++)
 	{
 		tree.insert(rand() % 100);
@@ -397,6 +413,9 @@ void main()
 	measure_performance("Сумма элементов дерева: ", &Tree::Sum, tree);
 	measure_performance("Количество элементов дерева: ", &Tree::count, tree);
 	measure_performance("Среднее арифметическое элементов дерева: ", &Tree::Avg, tree);
+	measure_performance("Глубина дерева: ", &Tree::depth, tree);
+#endif // PERFORMANCE_CHECK
+
 
 
 
