@@ -115,7 +115,6 @@ public:
 		}
 		balance(Root->pLeft);
 		balance(Root->pRight);
-		balance(Root);
 	}
 	void print()const
 	{
