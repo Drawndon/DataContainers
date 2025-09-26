@@ -93,6 +93,30 @@ public:
 	{
 		return (double)Sum(Root) / count(Root);
 	}
+	void balance(Element* Root)
+	{
+		if (Root == nullptr)return;
+		
+		if (abs(count(Root->pLeft) - count(Root->pRight)) < 2)return;
+
+		if (count(Root->pRight) < count(Root->pLeft))
+		{
+			if (Root->pRight == nullptr)Root->pRight = new Element(Root->Data);
+			else insert(Root->Data, Root->pRight);
+			Root->Data = maxValue(Root->pLeft);
+			Erase(maxValue(Root->pLeft), Root->pLeft);
+		}
+		if (count(Root->pLeft) < count(Root->pRight))
+		{
+			if (Root->pLeft == nullptr)Root->pLeft = new Element(Root->Data);
+			else insert(Root->Data, Root->pLeft);
+			Root->Data = minValue(Root->pRight);
+			Erase(minValue(Root->pRight), Root->pRight);
+		}
+		balance(Root->pLeft);
+		balance(Root->pRight);
+		balance(Root);
+	}
 	void print()const
 	{
 		print(Root);
@@ -223,7 +247,8 @@ public:
 //#define BASE_CHECK
 //#define ERASE_CHECK
 //#define DEPTH_CHECK
-#define EFFICIENCY_CHECK
+#define BALANCE_CHECK
+//#define EFFICIENCY_CHECK
 void main()
 {
 	setlocale(LC_ALL, "");
@@ -281,6 +306,14 @@ void main()
 	Tree tree = { 50, 25,75, 16, 32, 58, 85 };
 	cout << "Глубина дерева: " << tree.depth() << endl;
 #endif // DEPTH_CHECK
+
+#ifdef BALANCE_CHECK
+	Tree tree = { 55, 34, 21, 13, 8, 5, 3 };
+	
+	tree.balance(tree.getRoot());
+	tree.print();
+#endif // BALANCE_CHECK
+
 
 #ifdef EFFICIENCY_CHECK
 	int n;
