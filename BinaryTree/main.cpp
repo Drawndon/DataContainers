@@ -117,6 +117,16 @@ public:
 		}
 		balance(Root->pLeft);
 		balance(Root->pRight);
+		balance(Root);
+	}
+	void depth_print(int depth, int width = 4)const
+	{
+		depth_print(depth, Root, width);
+		cout << endl;
+	}
+	void tree_print()const
+	{
+		tree_print(depth(), 4 * depth());
 	}
 	void print()const
 	{
@@ -221,13 +231,33 @@ private:
 			depth(Root->pLeft) + 1 :
 			depth(Root->pRight) + 1;*/ //Так очень долго считает
 	}
+	void depth_print(int depth, Element* Root, int width)const
+	{
+		if (Root == nullptr)return;
+		if (depth == 0)
+		{
+			cout.width(width);
+			cout << Root->Data;
+		}
+		depth_print(depth - 1, Root->pLeft, width);
+		depth_print(depth - 1, Root->pRight, width);
+	}
+	void tree_print(int depth, int width)const
+	{
+		if (depth == -1)return;
+		tree_print(depth - 1, width * 1.5);
+		depth_print(depth - 1, width / 1.75);
+		cout << endl;
+		cout << endl;
+	}
 	void print(Element* Root)const
 	{
 		if (Root == nullptr)return;
 		print(Root->pLeft);
 		cout << Root->Data << tab;
 		print(Root->pRight);
-	}
+	}		
+
 };
 
 class UniqueTree :public Tree
@@ -269,9 +299,9 @@ template<typename T>void measure_performance(const char message[], T(Tree::*func
 //#define BASE_CHECK
 //#define ERASE_CHECK
 //#define DEPTH_CHECK
-//#define BALANCE_CHECK
+#define BALANCE_CHECK
 //#define EFFICIENCY_CHECK
-#define PERFORMANCE_CHECK
+//#define PERFORMANCE_CHECK
 void main()
 {
 	setlocale(LC_ALL, "");
@@ -329,14 +359,24 @@ void main()
 
 
 #ifdef DEPTH_CHECK
-	Tree tree = { 50, 25,75, 16, 32, 58, 85, 91, 98};
+	Tree tree =
+	{
+			50,
+		25,		75,
+	 16,  32, 58, 85//, 91, 98, 9, 41, 3
+	};
+	tree.print();
+	
 	cout << "Глубина дерева: " << tree.depth() << endl;
+	//tree.depth_print(3);
+	tree.tree_print();
 #endif // DEPTH_CHECK
 
 #ifdef BALANCE_CHECK
 	Tree tree = { 55, 34, 21, 13, 8, 5, 3 };
-	
+	tree.tree_print();
 	tree.balance(tree.getRoot());
+	tree.tree_print();
 	tree.print();
 #endif // BALANCE_CHECK
 
