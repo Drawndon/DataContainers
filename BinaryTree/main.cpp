@@ -75,6 +75,10 @@ public:
 	{
 		return depth(Root);
 	}
+	void balance()
+	{
+		balance(Root);
+	}
 	int minValue()const
 	{
 		return minValue(Root);
@@ -95,30 +99,7 @@ public:
 	{
 		return (double)Sum(Root) / count(Root);
 	}
-	void balance(Element* Root)
-	{
-		if (Root == nullptr)return;
-		
-		if (abs(count(Root->pLeft) - count(Root->pRight)) < 2)return;
 
-		if (count(Root->pRight) < count(Root->pLeft))
-		{
-			if (Root->pRight == nullptr)Root->pRight = new Element(Root->Data);
-			else insert(Root->Data, Root->pRight);
-			Root->Data = maxValue(Root->pLeft);
-			Erase(maxValue(Root->pLeft), Root->pLeft);
-		}
-		if (count(Root->pLeft) < count(Root->pRight))
-		{
-			if (Root->pLeft == nullptr)Root->pLeft = new Element(Root->Data);
-			else insert(Root->Data, Root->pLeft);
-			Root->Data = minValue(Root->pRight);
-			Erase(minValue(Root->pRight), Root->pRight);
-		}
-		balance(Root->pLeft);
-		balance(Root->pRight);
-		balance(Root);
-	}
 	void depth_print(int depth, int width = 4)const
 	{
 		depth_print(depth, Root, width);
@@ -231,9 +212,36 @@ private:
 			depth(Root->pLeft) + 1 :
 			depth(Root->pRight) + 1;*/ //Так очень долго считает
 	}
-	void depth_print(int depth, Element* Root, int width)const
+	void balance(Element* Root)
 	{
 		if (Root == nullptr)return;
+
+		if (abs(count(Root->pLeft) - count(Root->pRight)) < 2)return;
+
+		if (count(Root->pRight) < count(Root->pLeft))
+		{
+			if (Root->pRight == nullptr)Root->pRight = new Element(Root->Data);
+			else insert(Root->Data, Root->pRight);
+			Root->Data = maxValue(Root->pLeft);
+			Erase(maxValue(Root->pLeft), Root->pLeft);
+		}
+		if (count(Root->pLeft) < count(Root->pRight))
+		{
+			if (Root->pLeft == nullptr)Root->pLeft = new Element(Root->Data);
+			else insert(Root->Data, Root->pLeft);
+			Root->Data = minValue(Root->pRight);
+			Erase(minValue(Root->pRight), Root->pRight);
+		}
+		balance(Root->pLeft);
+		balance(Root->pRight);
+		balance(Root);
+	}
+	void depth_print(int depth, Element* Root, int width = 2)const
+	{
+		if (Root == nullptr)
+		{
+			return;
+		}
 		if (depth == 0)
 		{
 			cout.width(width);
@@ -244,7 +252,11 @@ private:
 	}
 	void tree_print(int depth, int width)const
 	{
-		if (depth == -1)return;
+		if (depth == -1)
+		{
+
+			return;
+		}
 		tree_print(depth - 1, width * 1.5);
 		depth_print(depth - 1, width / 1.75);
 		cout << endl;
@@ -256,7 +268,7 @@ private:
 		print(Root->pLeft);
 		cout << Root->Data << tab;
 		print(Root->pRight);
-	}		
+	}
 
 };
 
@@ -273,7 +285,7 @@ public:
 			else insert(Data, Root->pLeft);
 
 		}
-		else if(Data > Root->Data)//Если больше добавляем вправо
+		else if (Data > Root->Data)//Если больше добавляем вправо
 		{
 			if (Root->pRight == nullptr)Root->pRight = new Element(Data);
 			else insert(Data, Root->pRight);
@@ -288,7 +300,7 @@ public:
 
 };
 
-template<typename T>void measure_performance(const char message[], T(Tree::*function)()const, const Tree& tree)
+template<typename T>void measure_performance(const char message[], T(Tree::* function)()const, const Tree& tree)
 {
 	//int (*function)() - указатель на функцию, которая ничего не принимает, и возвращает значение типа 'int'
 	clock_t start = clock();
@@ -302,6 +314,7 @@ template<typename T>void measure_performance(const char message[], T(Tree::*func
 #define BALANCE_CHECK
 //#define EFFICIENCY_CHECK
 //#define PERFORMANCE_CHECK
+
 void main()
 {
 	setlocale(LC_ALL, "");
@@ -363,19 +376,19 @@ void main()
 	{
 			50,
 		25,		75,
-	 16,  32, 58, 85//, 91, 98, 9, 41, 3
+	 16,  32, 58, 85, 8 //91, 98, 9, 41, 3
 	};
 	tree.print();
-	
+
 	cout << "Глубина дерева: " << tree.depth() << endl;
 	//tree.depth_print(3);
 	tree.tree_print();
 #endif // DEPTH_CHECK
 
 #ifdef BALANCE_CHECK
-	Tree tree = { 55, 34, 21, 13, 8, 5, 3 };
+	Tree tree = { 55, 34, 21, 13, 8, 5, 3, 27, 74, 91, 102 };
 	tree.tree_print();
-	tree.balance(tree.getRoot());
+	tree.balance();
 	tree.tree_print();
 	tree.print();
 #endif // BALANCE_CHECK
@@ -455,10 +468,5 @@ void main()
 	measure_performance("Среднее арифметическое элементов дерева: ", &Tree::Avg, tree);
 	measure_performance("Глубина дерева: ", &Tree::depth, tree);
 #endif // PERFORMANCE_CHECK
-
-
-
-
-
 
 }
